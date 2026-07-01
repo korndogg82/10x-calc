@@ -1,0 +1,404 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Radikal Normal — Der Bandbreiten-Rechner</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Mulish:wght@400;500;600;700;800&display=swap');
+
+:root{
+  --bg:#FAF8F3; --card:#FFFFFF; --sunk:#F1ECE2; --ink:#1B1A18; --mut:#6E6A62;
+  --warm:#BF4A36; --warmd:#8F3326; --cool:#2E7C6C; --coold:#1F5A4E;
+  --hair:#E1DACE; --hair2:#D2C9BB;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{
+  background:var(--bg); color:var(--ink);
+  font-family:'Mulish',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  -webkit-font-smoothing:antialiased; line-height:1.5;
+  padding:28px 18px 56px;
+}
+.wrap{max-width:640px;margin:0 auto}
+
+.top{display:flex;align-items:center;gap:12px;margin-bottom:26px}
+.tick{width:34px;height:6px;background:var(--warm);border-radius:3px}
+.brand{font-weight:800;letter-spacing:.02em;font-size:15px}
+.langs{margin-left:auto;display:flex;gap:6px}
+.langs button{font-family:inherit;font-weight:700;font-size:13px;color:var(--mut);background:transparent;border:1.5px solid var(--hair2);border-radius:999px;padding:5px 12px;cursor:pointer;transition:.15s}
+.langs button.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+
+h1{font-weight:800;font-size:38px;line-height:1.05;margin:0 0 12px;letter-spacing:-.01em}
+.intro{color:var(--mut);font-size:17px;margin:0 0 26px;max-width:56ch}
+
+.card{background:var(--card);border:1px solid var(--hair);border-radius:20px;padding:22px;margin:16px 0}
+label.fl{display:block;font-weight:700;font-size:14.5px;margin:14px 0 8px}
+label.fl:first-of-type{margin-top:0}
+.field{display:flex;align-items:center;background:var(--sunk);border:1.5px solid var(--hair);border-radius:14px;overflow:hidden;transition:.15s}
+.field:focus-within{border-color:var(--cool)}
+.field .cur{padding:0 4px 0 16px;font-weight:800;font-size:20px;color:var(--mut)}
+.field input{font-family:inherit;font-weight:700;font-size:20px;color:var(--ink);border:0;background:transparent;outline:0;width:100%;padding:14px 16px 14px 8px}
+.hint{color:var(--mut);font-size:13px;margin:10px 2px 0}
+
+.curr{display:flex;gap:8px;margin-bottom:6px}
+.curr button{font-family:inherit;font-weight:700;font-size:16px;color:var(--mut);background:var(--sunk);border:1.5px solid var(--hair);border-radius:12px;padding:9px 0;flex:1;cursor:pointer;transition:.15s}
+.curr button.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+
+.hidden{display:none !important}
+#results{margin-top:26px}
+
+/* hero: two independent axes (income + wealth) */
+.hero{background:var(--card);border:1px solid var(--hair);border-radius:20px;padding:26px 22px 22px}
+.heroEyebrow{text-align:center;font-weight:700;font-size:12.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--mut);margin-bottom:18px}
+.heroGrid{display:flex;gap:18px}
+.axis{flex:1;text-align:center;min-width:0}
+.axisLabel{font-weight:700;font-size:12px;letter-spacing:.1em;color:var(--mut);text-transform:uppercase}
+.axisNum{font-weight:800;font-size:58px;line-height:1;letter-spacing:-.02em;color:var(--ink);margin-top:4px}
+.axisNum.over{color:var(--warm)}
+.axisNum.under{color:var(--cool)}
+.axisStatus{font-weight:800;font-size:15px;letter-spacing:.03em;text-transform:uppercase;margin-top:8px;color:var(--mut)}
+.axisStatus.over{color:var(--warm)}
+.axisStatus.under{color:var(--cool)}
+.axisSub{color:var(--mut);font-size:12.5px;margin-top:4px;min-height:1em}
+.miniGauge{margin-top:14px}
+.mtrack{position:relative;height:10px;border-radius:5px;background:linear-gradient(90deg,#DCEAE4,var(--cool));overflow:visible}
+.mmark{position:absolute;top:50%;width:16px;height:16px;border-radius:50%;background:var(--ink);border:3px solid var(--card);transform:translate(-50%,-50%);box-shadow:0 1px 3px rgba(0,0,0,.25);transition:left .2s}
+.mmark.over{background:var(--warm)}
+.mmark.under{background:var(--cool)}
+.movr{position:absolute;top:50%;transform:translateY(-50%);font-weight:800;font-size:14px}
+.movr.over{right:-2px;color:var(--warm)}
+.movr.under{left:-2px;color:var(--cool)}
+.mends{display:flex;justify-content:space-between;margin-top:7px;color:var(--mut);font-size:11px;font-weight:700}
+.heroFoot{color:var(--mut);font-size:12.5px;margin-top:20px;padding-top:14px;border-top:1px solid var(--hair);text-align:center}
+
+.slabel{font-weight:800;font-size:18px;margin:0 0 4px}
+.srow{display:flex;align-items:center;gap:16px;margin-top:12px}
+input[type=range]{-webkit-appearance:none;appearance:none;height:6px;border-radius:3px;background:var(--hair2);flex:1;outline:0}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:26px;height:26px;border-radius:50%;background:var(--cool);border:4px solid var(--bg);box-shadow:0 1px 4px rgba(0,0,0,.25);cursor:pointer}
+input[type=range]::-moz-range-thumb{width:26px;height:26px;border-radius:50%;background:var(--cool);border:4px solid var(--bg);cursor:pointer}
+.sval{font-weight:800;font-size:26px;min-width:74px;text-align:right}
+.sval span{color:var(--cool)}
+
+.panel h2{font-weight:800;font-size:15px;letter-spacing:.05em;text-transform:uppercase;color:var(--cool);margin:0 0 12px}
+.panel p{margin:0;font-size:17px}
+.panel p strong{font-weight:800}
+.panel p b{font-weight:800}
+.skew{margin-top:12px;color:var(--mut);font-size:15.5px}
+.skew b{color:var(--ink);font-weight:800}
+.contrast{margin-top:16px;padding-top:16px;border-top:1px solid var(--hair);font-size:17px;color:var(--ink)}
+.contrast b{color:var(--warm);font-weight:800}
+.contrast .good{color:var(--cool);font-weight:800}
+
+.provoke{background:var(--ink);border-color:var(--ink)}
+.provoke p{color:var(--bg);font-weight:800;font-size:22px;margin:0 0 16px;line-height:1.25}
+.shareRow{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+#shareBtn{font-family:inherit;font-weight:800;font-size:16px;color:var(--ink);background:var(--bg);border:0;border-radius:12px;padding:13px 20px;cursor:pointer;transition:.15s}
+#shareBtn:active{transform:translateY(1px)}
+#readMore{color:#E7E1D7;font-weight:700;font-size:15px;text-decoration:none;border-bottom:1.5px solid #4A463F;padding-bottom:1px}
+.copied{color:#9CC4B9;font-weight:700;font-size:14px;margin:12px 0 0}
+
+footer{margin-top:26px}
+footer p{color:var(--mut);font-size:12.5px;line-height:1.6;margin:0}
+
+@media(max-width:520px){
+  h1{font-size:31px}
+  .heroGrid{flex-direction:column;gap:24px}
+  .axisNum{font-size:56px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div class="tick"></div>
+    <span class="brand">RADIKAL NORMAL</span>
+    <div class="langs">
+      <button data-lang="de" class="on">DE</button>
+      <button data-lang="en">EN</button>
+    </div>
+  </div>
+
+  <h1 id="title"></h1>
+  <p class="intro" id="intro"></p>
+
+  <section class="card">
+    <div class="curr" id="currRow">
+      <button data-cur="EUR" class="on">€ EUR</button>
+      <button data-cur="USD">$ USD</button>
+      <button data-cur="GBP">£ GBP</button>
+    </div>
+    <label class="fl" id="lblIncome"></label>
+    <div class="field"><span class="cur" id="cur1">€</span><input id="income" inputmode="numeric" autocomplete="off" placeholder="0"></div>
+    <label class="fl" id="lblWealth"></label>
+    <div class="field"><span class="cur" id="cur2">€</span><input id="wealth" inputmode="numeric" autocomplete="off" placeholder="0"></div>
+    <p class="hint" id="hintPer"></p>
+  </section>
+
+  <section id="results" class="hidden">
+    <div class="hero">
+      <div class="heroEyebrow" id="heroEyebrow"></div>
+      <div class="heroGrid">
+        <div class="axis" id="axisInc">
+          <div class="axisLabel" id="axisIncLabel"></div>
+          <div class="axisNum" id="axisIncNum"></div>
+          <div class="axisStatus" id="axisIncStatus"></div>
+          <div class="axisSub" id="axisIncSub"></div>
+          <div class="miniGauge"><div class="mtrack"><div class="mmark" id="mmarkInc"></div><span class="movr hidden" id="movrInc"></span></div><div class="mends"><span id="mLeftInc"></span><span id="mRightInc"></span></div></div>
+        </div>
+        <div class="axis" id="axisWea">
+          <div class="axisLabel" id="axisWeaLabel"></div>
+          <div class="axisNum" id="axisWeaNum"></div>
+          <div class="axisStatus" id="axisWeaStatus"></div>
+          <div class="axisSub" id="axisWeaSub"></div>
+          <div class="miniGauge"><div class="mtrack"><div class="mmark" id="mmarkWea"></div><span class="movr hidden" id="movrWea"></span></div><div class="mends"><span id="mLeftWea"></span><span id="mRightWea"></span></div></div>
+        </div>
+      </div>
+      <div class="heroFoot" id="heroFoot"></div>
+    </div>
+
+    <div class="card">
+      <p class="slabel" id="lblSlider"></p>
+      <div class="srow">
+        <input type="range" id="mslider" min="3" max="30" value="10" step="1">
+        <div class="sval"><span id="sNum">10</span>×</div>
+      </div>
+      <p class="hint" id="sliderHint"></p>
+    </div>
+
+    <div class="card panel">
+      <h2 id="hToday"></h2>
+      <p id="todayBody"></p>
+      <p class="skew hidden" id="skew"></p>
+      <div class="contrast" id="contrast"></div>
+    </div>
+
+    <div class="card panel">
+      <h2 id="hWorld"></h2>
+      <p id="worldBody"></p>
+    </div>
+
+    <div class="card provoke">
+      <p id="provoke"></p>
+      <div class="shareRow">
+        <button id="shareBtn"></button>
+        <a id="readMore" target="_blank" rel="noopener"></a>
+      </div>
+      <p class="copied hidden" id="copied"></p>
+    </div>
+  </section>
+
+  <footer><p id="foot"></p></footer>
+</div>
+
+<script>
+"use strict";
+
+/* ---- Sole anchor: global average (mean). Floor = half the average. Ceiling = floor × M. ---- */
+const DATA = {
+  incomeAvg: 19800, incomeFloor: 9900,   // $ / year / adult   (floor = 0.5 × average)
+  wealthAvg: 86400, wealthFloor: 43200,  // $ / adult          (floor = 0.5 × average)
+  wealthMedian: 9000,                    // stated as CONTRAST only, never as the factor anchor
+  fxToUSD: { EUR: 1.08, USD: 1, GBP: 1.27 }
+};
+const SITE_URL = ""; /* z.B. "https://deinname.substack.com" */
+const CURSYM = { EUR:"€", USD:"$", GBP:"£" };
+
+const STR = {
+  de:{
+    title:"Wo stehst du?",
+    intro:"Gib dein Einkommen und Vermögen ein und sieh zweierlei: wie du im weltweiten Vergleich dastehst — und ob du in einer 10×-Welt angehoben, gedeckelt oder unberührt bliebest. Getrennt für Einkommen und Vermögen. Alle Werte pro Person, illustrativ.",
+    lblIncome:"Bruttoeinkommen pro Jahr (Gehalt, Kapitalerträge, Renten etc.)",
+    lblWealth:"Netto-Vermögen (Besitz und Ersparnisse minus Schulden)",
+    hintPer:"Pro erwachsene Person. Schätzwerte genügen. Daten verbleiben komplett in deinem Browser.",
+    incLabel:"Einkommen", weaLabel:"Vermögen",
+    lblSlider:"Wie eng soll die Bandbreite sein? (Verhältnis Reichste : Ärmste)",
+    sliderHint:"Verschiebe das erlaubte Maximum und sieh, ob du stabil bleibst, angehoben oder gedeckelt wirst.",
+    hToday:"Dein Einkommen und Vermögen im weltweiten Vergleich",
+    provoke:"Zu streng? Zu großzügig? Wo würdest du die Grenze ziehen?",
+    shareBtn:"Ergebnis teilen",
+    readMore:"Zur Serie →",
+    copied:"In die Zwischenablage kopiert.",
+    foot:"Grundlage: globale Durchschnittswerte aus Kapitel 4 — Welt-BIP (IWF, 2024) und Haushaltsvermögen (UBS Global Wealth Report 2025), verteilt auf rund 5,5 Mrd. Erwachsene. Der Boden entspricht der Hälfte des jeweiligen Durchschnitts, die Obergrenze dem Faktor × darüber. Median- und Extremwerte aus dem World Inequality Report 2026. Die Werte sind illustrativ. Währungsumrechnung näherungsweise."
+  },
+  en:{
+    title:"Where do you land?",
+    intro:"Enter your income and wealth and see two things: how you compare worldwide — and whether a 10× world would lift you, cap you, or leave you untouched. Shown separately for income and wealth. All figures per person, illustrative.",
+    lblIncome:"Gross income per year (wages, capital income, pensions, etc.)",
+    lblWealth:"Net wealth (assets and savings minus debts)",
+    hintPer:"Per adult. Rough figures are fine. Data stays entirely in your browser.",
+    incLabel:"Income", weaLabel:"Wealth",
+    lblSlider:"How tight should the band be? (ratio richest : poorest)",
+    sliderHint:"Move the allowed maximum and see whether you stay stable, get lifted, or get capped.",
+    hToday:"Your income and wealth by worldwide comparison",
+    provoke:"Too strict? Too generous? Where would you draw the line?",
+    shareBtn:"Share result",
+    readMore:"Read the series →",
+    copied:"Copied to clipboard.",
+    foot:"Basis: global averages from Chapter 4 — world GDP (IMF, 2024) and household wealth (UBS Global Wealth Report 2025), spread across ~5.5bn adults. The floor equals half of each average; the ceiling is the factor × above it. Median and extreme figures from the World Inequality Report 2026. Figures are illustrative. Currency conversion approximate."
+  }
+};
+
+let lang = "de", cur = "EUR";
+const $ = id => document.getElementById(id);
+function loc(){ return lang==="de" ? "de-DE" : "en-US"; }
+function nf(x){ return new Intl.NumberFormat(loc()).format(Math.round(x)); }
+function mf(x){ return new Intl.NumberFormat(loc(),{minimumFractionDigits:1,maximumFractionDigits:1}).format(x); }
+function parseNum(s){ const d=(s||"").replace(/[^\d]/g,""); return d ? parseInt(d,10) : null; }
+function toUSD(v){ return v==null ? null : v*DATA.fxToUSD[cur]; }
+function money(usd){
+  const v = usd / DATA.fxToUSD[cur];
+  const r = v >= 10000 ? Math.round(v/1000)*1000 : Math.round(v/100)*100;
+  return nf(r) + " " + CURSYM[cur];
+}
+function statusWord(st){
+  const de = lang==="de";
+  return st==="under" ? (de?"angehoben":"lifted") : st==="over" ? (de?"gedeckelt":"capped") : (de?"unberührt":"untouched");
+}
+
+function applyStatic(){
+  const t = STR[lang];
+  document.documentElement.lang = lang;
+  ["title","intro","lblIncome","lblWealth","hintPer","lblSlider","sliderHint","hToday","provoke","shareBtn","readMore","copied","foot"].forEach(k=>{ $(k).textContent = t[k]; });
+  $("axisIncLabel").textContent = t.incLabel;
+  $("axisWeaLabel").textContent = t.weaLabel;
+  $("readMore").style.display = SITE_URL ? "" : "none";
+  if(SITE_URL) $("readMore").href = SITE_URL;
+  document.querySelectorAll(".langs button").forEach(b=>b.classList.toggle("on", b.dataset.lang===lang));
+}
+
+/* fill one axis block; returns {factor, status} or null if not entered */
+function fillAxis(prefix, usd, floor, M){
+  const block = $("axis"+prefix);
+  if(usd==null){ block.classList.add("hidden"); return null; }
+  block.classList.remove("hidden");
+  const de = lang==="de";
+  const factor = usd/floor;
+  const ceil = floor*M;
+  const status = factor < 1 ? "under" : (factor > M ? "over" : "within");
+
+  $("axis"+prefix+"Num").textContent = mf(factor)+"×";
+  $("axis"+prefix+"Num").className = "axisNum" + (status==="over"?" over":status==="under"?" under":"");
+  const st = $("axis"+prefix+"Status");
+  st.textContent = status==="under" ? (de?"Wird angehoben":"Lifted up") : status==="over" ? (de?"Wird gedeckelt":"Capped") : (de?"Unberührt":"Untouched");
+  st.className = "axisStatus" + (status==="over"?" over":status==="under"?" under":"");
+  $("axis"+prefix+"Sub").textContent = status==="under" ? (de?`Anhebung auf ${money(floor)}`:`lifted to ${money(floor)}`)
+    : status==="over" ? (de?`Deckel bei ${money(ceil)}`:`capped at ${money(ceil)}`)
+    : (de?"im Korridor":"within the corridor");
+
+  const frac = Math.max(0, Math.min(1, (factor-1)/(M-1)));
+  const mk = $("mmark"+prefix), ov = $("movr"+prefix);
+  mk.style.left = (frac*100)+"%";
+  mk.className = "mmark" + (status==="over"?" over":status==="under"?" under":"");
+  if(status==="over"){ ov.className="movr over"; ov.textContent="›"; ov.classList.remove("hidden"); }
+  else if(status==="under"){ ov.className="movr under"; ov.textContent="‹"; ov.classList.remove("hidden"); }
+  else ov.classList.add("hidden");
+  $("mLeft"+prefix).textContent = de?"Boden 1×":"floor 1×";
+  $("mRight"+prefix).textContent = M+"×";
+  return { factor, status };
+}
+
+function render(){
+  applyStatic();
+  const de = lang==="de";
+  const incUSD = toUSD(parseNum($("income").value));
+  const weaUSD = toUSD(parseNum($("wealth").value));
+  const M = parseInt($("mslider").value,10);
+  $("sNum").textContent = M;
+
+  if(incUSD==null && weaUSD==null){ $("results").classList.add("hidden"); return; }
+  $("results").classList.remove("hidden");
+
+  $("heroEyebrow").textContent = de ? `In einer ${M}×-Welt` : `In a ${M}× world`;
+  const inc = fillAxis("Inc", incUSD, DATA.incomeFloor, M);
+  const wea = fillAxis("Wea", weaUSD, DATA.wealthFloor, M);
+  $("heroFoot").textContent = de
+    ? `1× = garantierter Boden (halber Weltdurchschnitt) · ${M}× = Obergrenze`
+    : `1× = guaranteed floor (half the world average) · ${M}× = ceiling`;
+
+  /* worldwide comparison — sole anchor: the mean */
+  const parts = [];
+  if(incUSD!=null) parts.push(de
+    ? `dein Einkommen ist das <strong>${mf(incUSD/DATA.incomeAvg)}-fache</strong> des weltweiten Durchschnitts (${money(DATA.incomeAvg)})`
+    : `your income is <strong>${mf(incUSD/DATA.incomeAvg)}×</strong> the world average (${money(DATA.incomeAvg)})`);
+  if(weaUSD!=null) parts.push(de
+    ? `dein Vermögen das <strong>${mf(weaUSD/DATA.wealthAvg)}-fache</strong> des weltweiten Durchschnitts (${money(DATA.wealthAvg)})`
+    : `your wealth is <strong>${mf(weaUSD/DATA.wealthAvg)}×</strong> the world average (${money(DATA.wealthAvg)})`);
+  let today = parts.join(de ? " — und " : " — and ");
+  $("todayBody").innerHTML = today.charAt(0).toUpperCase()+today.slice(1)+".";
+
+  /* median restored as CONTRAST: it exposes how the average is skewed (wealth only) */
+  if(weaUSD!=null){
+    $("skew").classList.remove("hidden");
+    $("skew").innerHTML = de
+      ? `Doch dieser Durchschnitt täuscht: die Hälfte der Menschheit besitzt unter ${money(DATA.wealthMedian)}. Gemessen an diesem typischen Menschen besitzt du das <b>${mf(weaUSD/DATA.wealthMedian)}-fache</b> — die Lücke zwischen Median und Schnitt ist die Handschrift der Spitze.`
+      : `But that average deceives: half of humanity owns under ${money(DATA.wealthMedian)}. Against that typical person you own <b>${mf(weaUSD/DATA.wealthMedian)}×</b> — the gap between median and mean is the signature of the top.`;
+  } else { $("skew").classList.add("hidden"); }
+
+  $("contrast").innerHTML = de
+    ? `Unterdessen klafft im real existierenden System zwischen den Ärmsten und den Reichsten ein Verhältnis von <b>über 10.000.000 zu 1</b>. Dieses Experiment erzwingt maximal <span class="good">${M} zu 1</span>.`
+    : `Meanwhile, in the system as it actually exists, the gap between poorest and richest is <b>over 10,000,000 to 1</b>. This experiment forces a maximum of <span class="good">${M} to 1</span>.`;
+
+  /* 10x-world takeaway: divergence-aware lead + dominant narrative (gain / share / stable) */
+  $("hWorld").textContent = de ? `In einer ${M}×-Welt` : `In a ${M}× world`;
+  const states = [inc, wea].filter(Boolean).map(a=>a.status);
+  const anyOver = states.includes("over"), anyUnder = states.includes("under");
+  let lead = "";
+  if(inc && wea && inc.status !== wea.status){
+    lead = de
+      ? `Dein Einkommen wäre ${statusWord(inc.status)}, dein Vermögen ${statusWord(wea.status)}. `
+      : `Your income would be ${statusWord(inc.status)}, your wealth ${statusWord(wea.status)}. `;
+  }
+  let body;
+  if(anyOver){
+    body = de
+      ? `<b>Du teilst.</b> Über der Grenze gibst du exklusiven Status, extremen Luxus und politischen Über-Einfluss ab — Medienimperien, private Raumfahrtprogramme, Privatjets. Deine Lebensqualität bleibt; am unteren Ende der Gesellschaft verschwinden Hunger und nackte Existenzangst.`
+      : `<b>You share.</b> Above the line you give up exclusive status, extreme luxury and outsized political influence — media empires, private space programmes, private jets. Your quality of life stays; at the other end of society, hunger and raw existential fear disappear.`;
+  } else if(anyUnder){
+    body = de
+      ? `<b>Du gewinnst.</b> Weil du unter dem Boden liegst, wirst du hochgezogen: handfeste Kaufkraft für Ernährung, sicheres Wohnen, Energie und Bildung — gegenfinanziert durch das Kappen der Extreme an der Spitze.`
+      : `<b>You gain.</b> Because you sit below the floor, you are lifted: real purchasing power for food, secure housing, energy and education — paid for by capping the extremes at the top.`;
+  } else {
+    body = de
+      ? `<b>Deine Bilanz bleibt stabil.</b> Auf dem Konto ändert sich fast nichts. Was sich ändert, ist das System um dich: der Boden unter dir ist garantiert, und die demokratiegefährdenden Vermögensextreme über dir verschwinden.`
+      : `<b>Your balance stays stable.</b> Almost nothing changes in your account. What changes is the system around you: the floor beneath you is guaranteed, and the democracy-threatening extremes of wealth above you disappear.`;
+  }
+  $("worldBody").innerHTML = lead + body;
+
+  /* share — carries both factors + the question */
+  let claim;
+  if(inc && wea) claim = de
+    ? `In einer ${M}×-Welt: mein Einkommen bei ${mf(inc.factor)}×, mein Vermögen bei ${mf(wea.factor)}×.`
+    : `In a ${M}× world: my income at ${mf(inc.factor)}×, my wealth at ${mf(wea.factor)}×.`;
+  else { const a = inc||wea; const w = inc?(de?"Einkommen":"income"):(de?"Vermögen":"wealth");
+    claim = de ? `In einer ${M}×-Welt läge mein ${w}-Faktor bei ${mf(a.factor)}×.` : `In a ${M}× world my ${w} factor would be ${mf(a.factor)}×.`; }
+  const q = de ? " Angehoben, gedeckelt oder unberührt? Wo ziehst du die Grenze? — Radikal Normal" : " Lifted, capped, or untouched? Where would you draw the line? — Radically Normal";
+  window.__share = claim + q + (SITE_URL ? "\n" + SITE_URL : "");
+}
+
+/* events */
+$("income").addEventListener("input", render);
+$("wealth").addEventListener("input", render);
+$("mslider").addEventListener("input", render);
+document.querySelectorAll(".langs button").forEach(b=>b.addEventListener("click", ()=>{ lang=b.dataset.lang; render(); }));
+document.querySelectorAll(".curr button").forEach(b=>b.addEventListener("click", ()=>{
+  cur=b.dataset.cur;
+  document.querySelectorAll(".curr button").forEach(x=>x.classList.toggle("on", x===b));
+  $("cur1").textContent=CURSYM[cur]; $("cur2").textContent=CURSYM[cur]; render();
+}));
+$("shareBtn").addEventListener("click", async ()=>{
+  const txt = window.__share || STR[lang].provoke;
+  try{
+    if(navigator.share){ await navigator.share({ text: txt, url: SITE_URL || undefined }); return; }
+    await navigator.clipboard.writeText(txt); showCopied();
+  }catch(e){
+    try{ const ta=document.createElement("textarea"); ta.value=txt; ta.style.position="fixed"; ta.style.opacity="0";
+      document.body.appendChild(ta); ta.select(); document.execCommand("copy"); document.body.removeChild(ta); showCopied(); }catch(_){}
+  }
+});
+function showCopied(){ const c=$("copied"); c.classList.remove("hidden"); clearTimeout(window.__ct); window.__ct=setTimeout(()=>c.classList.add("hidden"),2600); }
+
+render();
+</script>
+</body>
+</html>
