@@ -1,0 +1,469 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Radikal Normal — Der 10x-Rechner</title>
+<meta name="description" content="Der Reichste höchstens 10× so viel wie der Ärmste – statt über 10.000.000× wie heute. Rechne aus, wo du in so einer Bandbreite lägest.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Radikal Normal — Wo stehst du?">
+<meta property="og:description" content="Der Reichste höchstens 10× so viel wie der Ärmste – statt über 10.000.000× wie heute. Rechne aus, wo du in so einer Bandbreite lägest.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Radikal Normal — Wo stehst du?">
+<meta name="twitter:description" content="Der Reichste höchstens 10× so viel wie der Ärmste – statt über 10.000.000× wie heute. Rechne aus, wo du in so einer Bandbreite lägest.">
+<meta property="og:url" content="https://rechner.radikalnormal.de/">
+<meta property="og:image" content="https://rechner.radikalnormal.de/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Radikal Normal — Wo stehst du? Der Reichste hat heute über 10.000.000× so viel wie der Ärmste.">
+<meta name="twitter:image" content="https://rechner.radikalnormal.de/og-image.png">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Mulish:wght@400;500;600;700;800&display=swap');
+
+:root{
+  --bg:#FAF8F3; --card:#FFFFFF; --sunk:#F1ECE2; --ink:#1B1A18; --mut:#6E6A62;
+  --warm:#BF4A36; --warmd:#8F3326; --cool:#2E7C6C; --coold:#1F5A4E;
+  --hair:#E1DACE; --hair2:#D2C9BB;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{
+  background:var(--bg); color:var(--ink);
+  font-family:'Mulish',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  -webkit-font-smoothing:antialiased; line-height:1.5;
+  padding:28px 18px 56px;
+}
+.wrap{max-width:640px;margin:0 auto}
+
+.top{display:flex;align-items:center;gap:12px;margin-bottom:26px}
+.tick{width:34px;height:6px;background:var(--warm);border-radius:3px}
+.brand{font-weight:800;letter-spacing:.02em;font-size:15px;color:var(--ink);text-decoration:none;text-transform:uppercase}
+a.brand[href]{cursor:pointer}
+a.brand[href]:hover{color:var(--warm)}
+.ilink{color:var(--warm);font-weight:700;text-decoration:none;white-space:nowrap}
+.ilink:hover{text-decoration:underline}
+.langs{margin-left:auto;display:flex;gap:6px}
+.langs button{font-family:inherit;font-weight:700;font-size:13px;color:var(--mut);background:transparent;border:1.5px solid var(--hair2);border-radius:999px;padding:5px 12px;cursor:pointer;transition:.15s}
+.langs button.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+
+h1{font-weight:800;font-size:36px;line-height:1.08;margin:0 0 10px;letter-spacing:-.01em}
+.lede{font-weight:700;font-size:18px;line-height:1.4;margin:0 0 14px;color:var(--ink);max-width:56ch}
+.lede b{color:var(--warm)}
+.intro{color:var(--mut);font-size:16px;margin:0 0 26px;max-width:56ch}
+
+.card{background:var(--card);border:1px solid var(--hair);border-radius:20px;padding:22px;margin:16px 0}
+label.fl{display:block;font-weight:700;font-size:14.5px;margin:14px 0 8px}
+label.fl:first-of-type{margin-top:0}
+.field{display:flex;align-items:center;background:var(--sunk);border:1.5px solid var(--hair);border-radius:14px;overflow:hidden;transition:.15s}
+.field:focus-within{border-color:var(--cool)}
+.field .cur{padding:0 4px 0 16px;font-weight:800;font-size:19px;color:var(--mut)}
+.field input{font-family:inherit;font-weight:700;font-size:19px;color:var(--ink);border:0;background:transparent;outline:0;width:100%;padding:13px 16px 13px 8px}
+.hint{color:var(--mut);font-size:13px;margin:10px 2px 0}
+
+.curr{display:flex;gap:8px;margin-bottom:6px}
+.curr button{font-family:inherit;font-weight:700;font-size:15px;color:var(--mut);background:var(--sunk);border:1.5px solid var(--hair);border-radius:11px;padding:8px 0;flex:1;cursor:pointer;transition:.15s}
+.curr button.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+
+.hidden{display:none !important}
+#results{margin-top:26px}
+
+/* hero: two stacked rows (income, wealth), each independent */
+.hero-box{background:var(--card);border:1px solid var(--hair);border-radius:20px;padding:24px 22px}
+.hero-row{border-bottom:1px solid var(--sunk);padding-bottom:20px;margin-bottom:20px}
+.hero-row:last-of-type{border-bottom:0;padding-bottom:0;margin-bottom:0}
+.hero-meta{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.hero-title{font-weight:700;font-size:13px;text-transform:uppercase;color:var(--mut);letter-spacing:.09em}
+.hero-factor{font-weight:800;font-size:44px;line-height:1;letter-spacing:-.02em;color:var(--ink)}
+.hero-factor.cap{color:var(--warm)}
+.hero-factor.lift{color:var(--cool)}
+.hero-verdict{font-weight:800;font-size:19px;color:var(--ink)}
+.hero-verdict.cap{color:var(--warm)}
+.hero-verdict.lift{color:var(--cool)}
+.hero-sub{font-size:15px;color:var(--mut);margin-top:6px;line-height:1.45}
+
+.mgauge{margin:14px 0 2px;position:relative}
+.mtrack{position:relative;height:9px;border-radius:5px;background:linear-gradient(90deg,#E4EEE9,#BFDAD1);overflow:visible}
+.mmark{position:absolute;top:50%;width:15px;height:15px;border-radius:50%;background:var(--ink);border:3px solid var(--card);transform:translate(-50%,-50%);box-shadow:0 1px 3px rgba(0,0,0,.25);transition:left .2s}
+.mmark.cap{background:var(--warm)}
+.mmark.lift{background:var(--cool)}
+.movr{position:absolute;top:50%;transform:translateY(-50%);font-weight:800;font-size:14px}
+.movr.cap{right:-3px;color:var(--warm)}
+.movr.lift{left:-3px;color:var(--cool)}
+.mends{display:flex;justify-content:space-between;margin-top:7px;color:var(--mut);font-size:11px;font-weight:700}
+.hero-note{color:var(--mut);font-size:12.5px;line-height:1.55;margin-top:22px;padding-top:14px;border-top:1px solid var(--hair)}
+.why{margin:14px 2px 0}
+.why summary{cursor:pointer;font-weight:700;font-size:14px;color:var(--mut);list-style-position:inside}
+.why[open] summary{color:var(--ink)}
+.why p{color:var(--mut);font-size:14px;line-height:1.6;margin:8px 0 0}
+
+.slabel{font-weight:800;font-size:17px;margin:0 0 4px}
+.srow{display:flex;align-items:center;gap:16px;margin-top:12px}
+input[type=range]{-webkit-appearance:none;appearance:none;height:6px;border-radius:3px;background:var(--hair2);flex:1;outline:0}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:26px;height:26px;border-radius:50%;background:var(--cool);border:4px solid var(--bg);box-shadow:0 1px 4px rgba(0,0,0,.25);cursor:pointer}
+input[type=range]::-moz-range-thumb{width:26px;height:26px;border-radius:50%;background:var(--cool);border:4px solid var(--bg);cursor:pointer}
+.sval{font-weight:800;font-size:25px;min-width:70px;text-align:right}
+.sval span{color:var(--cool)}
+
+.panel h2{font-weight:800;font-size:14.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--cool);margin:0 0 12px}
+.panel p{margin:0;font-size:17px}
+.panel p strong{font-weight:800}
+.skew{margin-top:12px;color:var(--mut);font-size:15.5px}
+.skew b{color:var(--ink);font-weight:800}
+.contrast{margin-top:16px;padding-top:16px;border-top:1px solid var(--hair);font-size:17px;color:var(--ink)}
+.contrast b{color:var(--warm);font-weight:800}
+.contrast .good{color:var(--cool);font-weight:800}
+
+.provoke{background:var(--ink);border-color:var(--ink)}
+.provoke p{color:var(--bg);font-weight:800;font-size:21px;margin:0 0 16px;line-height:1.28}
+.shareRow{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+#shareBtn{font-family:inherit;font-weight:800;font-size:16px;color:var(--ink);background:var(--bg);border:0;border-radius:12px;padding:13px 20px;cursor:pointer;transition:.15s}
+#shareBtn:active{transform:translateY(1px)}
+.spill{font-family:inherit;font-weight:700;font-size:14px;color:#E7E1D7;background:transparent;border:1.5px solid #4A463F;border-radius:999px;padding:9px 14px;cursor:pointer;transition:.15s}
+.spill:hover{border-color:#E7E1D7}
+#readMore{color:#E7E1D7;font-weight:700;font-size:15px;text-decoration:none;border-bottom:1.5px solid #4A463F;padding-bottom:1px}
+.copied{color:#9CC4B9;font-weight:700;font-size:14px;margin:12px 0 0}
+
+footer{margin-top:26px}
+footer p{color:var(--mut);font-size:12.5px;line-height:1.6;margin:0}
+
+@media(max-width:430px){ h1{font-size:31px} .hero-factor{font-size:40px} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div class="tick"></div>
+    <a class="brand" id="brand" target="_blank" rel="noopener">RADIKAL NORMAL</a>
+    <div class="langs"><button data-lang="de">DE</button><button data-lang="en">EN</button></div>
+  </div>
+
+  <h1 id="title"></h1>
+  <p class="lede" id="lede"></p>
+  <p class="intro" id="intro"></p>
+
+  <section class="card">
+    <div class="curr">
+      <button data-cur="EUR" class="on">€ EUR</button>
+      <button data-cur="USD">$ USD</button>
+      <button data-cur="GBP">£ GBP</button>
+    </div>
+    <label class="fl" id="lblIncome"></label>
+    <div class="field"><span class="cur" id="cur1">€</span><input id="income" inputmode="numeric" autocomplete="off" placeholder="0"></div>
+    <label class="fl" id="lblWealth"></label>
+    <div class="field"><span class="cur" id="cur2">€</span><input id="wealth" inputmode="numeric" autocomplete="off" placeholder="0"></div>
+    <p class="hint" id="hintPer"></p>
+  </section>
+
+  <section id="results" class="hidden">
+      <div class="card">
+      <p class="slabel" id="lblSlider"></p>
+      <div class="srow">
+        <input type="range" id="mslider" min="3" max="100" value="10" step="1">
+        <div class="sval"><span id="sNum">10</span>×</div>
+      </div>
+      <p class="hint" id="sliderHint"></p>
+    </div>
+    <div class="hero-box">
+      <div class="hero-row" id="rowInc">
+        <div class="hero-meta"><span class="hero-verdict" id="verdInc"></span><span class="hero-factor" id="facInc"></span></div>
+        <div class="hero-sub" id="subInc"></div>
+        <div class="mgauge"><div class="mtrack"><div class="mmark" id="markInc"></div><span class="movr hidden" id="ovrInc"></span></div><div class="mends"><span id="mLInc"></span><span id="mRInc"></span></div></div>
+      </div>
+      <div class="hero-row" id="rowWea">
+        <div class="hero-meta"><span class="hero-verdict" id="verdWea"></span><span class="hero-factor" id="facWea"></span></div>
+        <div class="hero-sub" id="subWea"></div>
+        <div class="mgauge"><div class="mtrack"><div class="mmark" id="markWea"></div><span class="movr hidden" id="ovrWea"></span></div><div class="mends"><span id="mLWea"></span><span id="mRWea"></span></div></div>
+      </div>
+      <div class="hero-note" id="heroNote"></div>
+    </div>
+
+    <details class="why"><summary id="whyS"></summary><p id="whyB"></p></details>
+
+    
+
+    <div class="card panel">
+      <h2 id="hToday"></h2>
+      <p id="todayBody"></p>
+      <p class="skew hidden" id="skew"></p>
+    </div>
+
+    <div class="card panel">
+      <h2 id="hWorld"></h2>
+      <p id="worldBody"></p>
+    </div>
+
+    <div class="card provoke">
+      <p id="provoke"></p>
+      <div class="shareRow"><button id="shareBtn"></button><button id="shareX" class="spill">X</button><button id="shareLI" class="spill">LinkedIn</button><a id="readMore" target="_blank" rel="noopener"></a></div>
+      <p class="copied hidden" id="copied"></p>
+    </div>
+  </section>
+
+  <footer><p id="foot"></p></footer>
+</div>
+
+<script>
+"use strict";
+
+/* ---- Locked figures from Chapter 4. Sole anchor = the global average (mean). ----
+   Floor = half the average. Ceiling = floor × M.  At M=10 this reproduces the
+   essay's Stufe-3 figures exactly ($99,000 income / $432,000 wealth). ---- */
+const DATA = {
+  incomeAvg: 19800, incomeFloor: 9900,   // $ / year / adult
+  wealthAvg: 86400, wealthFloor: 43200,  // $ / adult
+  wealthMedian: 9000,                    // shown as CONTRAST only, never as the anchor
+  fxToUSD: { EUR: 1.08, USD: 1, GBP: 1.27 }
+};
+const ESSAY_URL_DE = "https://radikalnormal.de/p/radikal-normal-ubersicht";
+const ESSAY_URL_EN = "https://radicallynormal.com/p/overview";
+/* Sprachabhängig: DE-Leser -> deutsche Übersicht, EN-Leser -> englische Overview. Teilen-Button teilt die Adresse dieser Seite. */
+const CURSYM = { EUR:"€", USD:"$", GBP:"£" };
+
+const STR = {
+  de:{
+    title:"Wo stehst du?",
+    brand:"Radikal Normal", tagline:"Der 10x-Rechner",
+    lede:"Stell dir eine Welt vor, in der die Reichsten höchstens <b>10-mal so viel</b> hätten wie die Ärmsten — statt über <b>10.000.000-mal</b> wie heute. Wo lägest <b>du</b> in so einer Welt?",
+    intro:"Gib dein Einkommen und Vermögen ein — keine Angst, wir speichern nichts; alles bleibt in deinem Browser. Du siehst dann, wie du im weltweiten Vergleich dastehst und ob du in einer 10×-Welt gewinnst, teilst oder abgesichert bleibst — getrennt für Einkommen und Vermögen. Du kannst auch ausprobieren, wie andere Verhältnisse als 10× aussähen. Alle Werte sind pro Person und rein illustrativ.",
+    lblIncome:"Bruttoeinkommen pro Jahr (Gehalt, Kapitalerträge, Renten etc.)",
+    lblWealth:"Netto-Vermögen (Besitz und Ersparnisse minus Schulden)",
+    hintPer:"Pro Person; Schätzwerte genügen.",
+    tInc:"Einkommen", tWea:"Vermögen",
+    lblSlider:"Wie viel mehr darf der Reichste haben als der Ärmste?",
+    sliderHint:"Zieh am Regler — dein Ergebnis darunter ändert sich sofort.",
+    whyS:"Warum diese Skala?",
+    whyB:"Die Basis der Berechnung ist der weltweite Durchschnitt pro erwachsener Person — das gesamte Einkommen und Vermögen der Welt, gleichmäßig auf alle verteilt. Die Untergrenze liegt bei der Hälfte davon: genug für Ernährung, Wohnen, Energie und Bildung. Die Obergrenze ist das Vielfache der Untergrenze, das du selbst einstellst — bei 10× entspricht sie genau der obersten Stufe aus dem Essay. Das sind bewusst vereinfachte Werte, keine exakten Perzentile.",
+    hToday:"Dein Einkommen und Vermögen im weltweiten Vergleich",
+    provoke:"Zu streng? Zu großzügig? Wo würdest du die Grenze ziehen?",
+    shareBtn:"Ergebnis teilen", readMore:"Die ganze Serie lesen →", essayLink:"→ Zur ganzen Streitschrift",
+    copied:"In die Zwischenablage kopiert.",
+    copiedLI:"Dein Text ist kopiert — im LinkedIn-Beitrag einfügen (Strg/Cmd+V).",
+    foot:"Grundlage: globale Durchschnittswerte aus Kapitel 4 — Welt-BIP (IWF, 2024) und Haushaltsvermögen (UBS Global Wealth Report 2025), verteilt auf rund 5,5 Mrd. Erwachsene. Die Untergrenze entspricht der Hälfte des jeweiligen Durchschnitts, die Obergrenze dem Faktor × darüber. Median- und Extremwerte aus dem World Inequality Report 2026. Die Werte sind illustrativ. Währungsumrechnung näherungsweise."
+  },
+  en:{
+    title:"Where do you land?",
+    brand:"Radically Normal", tagline:"The 10x Calculator",
+    lede:"Picture a world where the richest have at most <b>10 times</b> as much as the poorest — instead of over <b>10,000,000 times</b>, as they do today. Where would <b>you</b> land in such a world?",
+    intro:"Enter your income and wealth — don't worry, we don't store anything, and it all stays in your browser. You'll see how you compare worldwide, and whether a 10× world would mean you gain, share, or stay secure — separately for income and wealth. You can also try ratios other than 10×. All figures are per person and purely illustrative.",
+    lblIncome:"Gross annual income (wages, investment returns, pensions, etc.)",
+    lblWealth:"Net wealth (total assets and savings, minus debt)",
+    hintPer:"Per person; rough figures are fine.",
+    tInc:"Income", tWea:"Wealth",
+    lblSlider:"How much more may the richest have than the poorest?",
+    sliderHint:"Drag the slider — your result below updates instantly.",
+    whyS:"Why this scale?",
+    whyB:"The basis for the calculation is the worldwide average per adult — all the income and wealth in the world, shared out evenly. The floor sits at half of that: enough for food, housing, energy and education. The ceiling is the multiple of the floor you set yourself — at 10× it matches the essay's top tier exactly. These are simplified figures, not exact statistical percentiles.",
+    hToday:"How your income and wealth compare globally",
+    provoke:"Too strict? Too generous? Where would you draw the line?",
+    shareBtn:"Share result", readMore:"Read the full series →", essayLink:"→ Read the full essay",
+    copied:"Copied to clipboard.",
+    copiedLI:"Your text is copied — paste it into your LinkedIn post (Ctrl/Cmd+V).",
+    foot:"Basis: global averages from Chapter 4 — world GDP (IMF, 2024) and household wealth (UBS Global Wealth Report 2025), spread across ~5.5bn adults. The floor equals half of each average; the ceiling is the factor × above it. Median and extreme figures from the World Inequality Report 2026. Figures are illustrative. Currency conversion approximate."
+  }
+};
+
+let lang = "de", cur = "EUR";
+/* Sprache: 1) ?lang=de|en aus der URL (vom Essay-Button gesetzt) hat Vorrang, sonst 2) Browsersprache, sonst Englisch. */
+{
+  const q = new URLSearchParams(location.search).get("lang");
+  if (q === "de" || q === "en") { lang = q; }
+  else { const L = navigator.languages || [navigator.language || ""]; lang = L.some(x => (x||"").toLowerCase().startsWith("de")) ? "de" : "en"; }
+}
+const $ = id => document.getElementById(id);
+function loc(){ return lang==="de" ? "de-DE" : "en-US"; }
+function nf(x){ return new Intl.NumberFormat(loc()).format(Math.round(x)); }
+function mf(x){ return new Intl.NumberFormat(loc(),{minimumFractionDigits:1,maximumFractionDigits:1}).format(x); }
+function parseNum(s){ const d=(s||"").replace(/[^\d]/g,""); return d ? parseInt(d,10) : null; }
+function toUSD(v){ return v==null ? null : v*DATA.fxToUSD[cur]; }
+function money(usd){
+  const v = usd / DATA.fxToUSD[cur];
+  const r = v >= 10000 ? Math.round(v/1000)*1000 : Math.round(v/100)*100;
+  return lang==="de" ? nf(r) + " " + CURSYM[cur] : CURSYM[cur] + nf(r);
+}
+
+function applyStatic(){
+  const t = STR[lang];
+  document.documentElement.lang = lang;
+  document.title = t.brand + " — " + t.tagline;
+  $("brand").textContent = t.brand;
+  ["title","lblIncome","lblWealth","hintPer","lblSlider","sliderHint","whyS","whyB","hToday","provoke","shareBtn","readMore","copied","foot"].forEach(k=>{ $(k).textContent = t[k]; });
+  $("lede").innerHTML = t.lede;
+  const essayUrl = lang==="de" ? ESSAY_URL_DE : ESSAY_URL_EN;
+  $("readMore").style.display = essayUrl ? "" : "none";
+  if(essayUrl) $("readMore").href = essayUrl;
+  if(essayUrl) $("brand").setAttribute("href", essayUrl);
+  $("intro").innerHTML = t.intro + (essayUrl ? ` <a class="ilink" href="${essayUrl}" target="_blank" rel="noopener">${t.essayLink}</a>` : "");
+  document.querySelectorAll(".langs button").forEach(b=>b.classList.toggle("on", b.dataset.lang===lang));
+}
+
+/* fill one axis row; returns status ("under"/"within"/"over") or null */
+function fillRow(prefix, usd, floor, M){
+  const row = $("row"+prefix);
+  if(usd==null){ row.classList.add("hidden"); return null; }
+  row.classList.remove("hidden");
+  const de = lang==="de";
+  const factor = usd/floor;
+  const ceil = floor*M;
+  const status = factor < 1 ? "under" : (factor > M ? "over" : "within");
+  const cls = status==="over" ? "cap" : status==="under" ? "lift" : "";
+
+  $("fac"+prefix).textContent = mf(factor)+"×";
+  $("fac"+prefix).className = "hero-factor" + (cls?" "+cls:"");
+  $("verd"+prefix).textContent = status==="under" ? (de?"Du gewinnst":"You gain")
+    : status==="over" ? (de?"Du teilst":"You share") : (de?"Du bist abgesichert":"You're secure");
+  $("verd"+prefix).className = "hero-verdict" + (cls?" "+cls:"");
+  const isInc = prefix==="Inc";
+  const noun = de ? (isInc?"Einkommen":"Vermögen") : (isInc?"income":"wealth");
+  const verbMore = de ? (isInc?"verdienst":"hast") : (isInc?"earn":"own");
+  const lowest = de ? (isInc?"der Mensch mit dem geringsten Einkommen":"der Mensch mit dem niedrigsten Vermögen")
+                    : (isInc?"the person with the lowest income":"the person with the least wealth");
+  $("sub"+prefix).textContent = status==="under"
+    ? (de?`Dein ${noun} steigt auf mindestens ${money(floor)} — so viel ist jedem Menschen garantiert.`
+         :`Your ${noun} rises to at least ${money(floor)} — the minimum everyone is guaranteed.`)
+    : status==="over"
+    ? (de?`Dein ${noun} sinkt auf höchstens ${money(ceil)}, weil du deutlich mehr ${verbMore} als ${lowest}.`
+         :`Your ${noun} falls to at most ${money(ceil)}, because you ${verbMore} far more than ${lowest}.`)
+    : (de?`Dein ${noun} bleibt im Korridor und ändert sich nicht wesentlich.`
+         :`Your ${noun} stays within the corridor and doesn't change in any major way.`);
+
+  const frac = Math.max(0, Math.min(1, (factor-1)/(M-1)));
+  const mk = $("mark"+prefix), ov = $("ovr"+prefix);
+  mk.style.left = (frac*100)+"%";
+  mk.className = "mmark" + (cls?" "+cls:"");
+  if(status==="over"){ ov.className="movr cap"; ov.textContent="›"; ov.classList.remove("hidden"); }
+  else if(status==="under"){ ov.className="movr lift"; ov.textContent="‹"; ov.classList.remove("hidden"); }
+  else ov.classList.add("hidden");
+  $("mL"+prefix).textContent = de?"1× (Untergrenze)":"1× (floor)";
+  $("mR"+prefix).textContent = de?`${M}× (Obergrenze)`:`${M}× (ceiling)`;
+  return status;
+}
+
+function render(){
+  applyStatic();
+  const de = lang==="de";
+  const incUSD = toUSD(parseNum($("income").value));
+  const weaUSD = toUSD(parseNum($("wealth").value));
+  const M = parseInt($("mslider").value,10);
+  $("sNum").textContent = M;
+
+  if(incUSD==null && weaUSD==null){ $("results").classList.add("hidden"); return; }
+  $("results").classList.remove("hidden");
+
+  const incF = incUSD!=null ? incUSD/DATA.incomeFloor : null;
+  const weaF = weaUSD!=null ? weaUSD/DATA.wealthFloor : null;
+  const incStatus = fillRow("Inc", incUSD, DATA.incomeFloor, M);
+  const weaStatus = fillRow("Wea", weaUSD, DATA.wealthFloor, M);
+
+  $("heroNote").innerHTML = de
+    ? `Die Einkommens- und Vermögensverteilung der Welt wird in diesen engeren Korridor zusammengestaucht — deine genaue neue Position lässt sich nicht auf den Euro vorhersagen. Fest stehen nur die Grenzen: 1× (Untergrenze), ${M}× (Obergrenze).`
+    : `The world's income and wealth are squeezed into this tighter corridor — your exact new position can't be predicted to the last dollar. Only the limits are fixed: 1× (floor), ${M}× (ceiling).`;
+
+  /* worldwide comparison — sole anchor: the mean */
+  const parts = [];
+  if(incUSD!=null) parts.push(de
+    ? `dein Einkommen ist das <strong>${mf(incUSD/DATA.incomeAvg)}-fache</strong> des Durchschnitts aller Erwachsenen weltweit (${money(DATA.incomeAvg)})`
+    : `your income is <strong>${mf(incUSD/DATA.incomeAvg)}×</strong> the average of all adults worldwide (${money(DATA.incomeAvg)})`);
+  if(weaUSD!=null) parts.push(de
+    ? `dein Vermögen das <strong>${mf(weaUSD/DATA.wealthAvg)}-fache</strong> des Durchschnitts aller Erwachsenen weltweit (${money(DATA.wealthAvg)})`
+    : `your wealth is <strong>${mf(weaUSD/DATA.wealthAvg)}×</strong> the average of all adults worldwide (${money(DATA.wealthAvg)})`);
+  let today = parts.join(de ? " — und " : " — and ");
+  $("todayBody").innerHTML = today.charAt(0).toUpperCase()+today.slice(1)+".";
+
+  /* median restored as CONTRAST — it exposes how skewed the average is (wealth only) */
+  if(weaUSD!=null){
+    $("skew").classList.remove("hidden");
+    $("skew").innerHTML = de
+      ? `Doch dieser Durchschnitt täuscht: wenige extrem reiche Menschen verzerren ihn stark nach oben. Die Hälfte der Menschheit besitzt weniger als ${money(DATA.wealthMedian)} — gemessen an diesem typischen Menschen besitzt du das <b>${mf(weaUSD/DATA.wealthMedian)}-fache</b>.`
+      : `But this average is deceiving: a few extremely rich people pull it far upward. Half of humanity owns less than ${money(DATA.wealthMedian)} — measured against that typical person, you own <b>${mf(weaUSD/DATA.wealthMedian)}×</b> as much.`;
+  } else { $("skew").classList.add("hidden"); }
+
+
+
+  /* 10x-world takeaway — per-combination verdict (share / gain / hybrid / partial / stable) */
+  $("hWorld").textContent = de ? `In einer ${M}×-Welt` : `In a ${M}× world`;
+  const hasCap  = incStatus==="over"  || weaStatus==="over";
+  const hasLift = incStatus==="under" || weaStatus==="under";
+  const hasStab = incStatus==="within"|| weaStatus==="within";
+  const nInc = de?"Einkommen":"income", nWea = de?"Vermögen":"wealth";
+  let w;
+  if(hasCap && !hasLift && !hasStab){
+    w = de
+      ? `<b>Du teilst.</b> Über der Grenze gibst du vor allem Rang, Status und Über-Einfluss ab — deine Lebensqualität bleibt.`
+      : `<b>You share.</b> Above the line you mainly give up rank, status and outsized influence — your quality of life stays.`;
+  } else if(hasLift && !hasCap && !hasStab){
+    w = de
+      ? `<b>Du gewinnst.</b> Weil du unter der Untergrenze liegst, sichert dir das System handfeste Kaufkraft: Ernährung, Wohnen, Energie, Bildung.`
+      : `<b>You gain.</b> Because you sit below the floor, the system secures you real purchasing power: food, housing, energy, education.`;
+  } else if(hasCap && hasLift){
+    const oN = incStatus==="over" ? nInc : nWea, uN = incStatus==="under" ? nInc : nWea;
+    w = de
+      ? `<b>Du teilst und gewinnst zugleich.</b> Dein ${oN} liegt über der Obergrenze und wird gestaucht — dein ${uN} wird mindestens auf die Untergrenze gehoben. Oben gibst du ab, unten bist du für immer vor dem Absturz geschützt.`
+      : `<b>You share and gain at once.</b> Your ${oN} sits above the ceiling and is compressed — your ${uN} is lifted to at least the floor. You give up at the top and are protected for good at the bottom.`;
+  } else if(hasCap && hasStab){
+    const oN = incStatus==="over" ? nInc : nWea, sN = incStatus==="within" ? nInc : nWea;
+    w = de
+      ? `<b>Du teilst — mit deinem ${oN}.</b> Es liegt über der Obergrenze und wird gestaucht; dein ${sN} bleibt im Korridor und ändert sich nicht wesentlich.`
+      : `<b>You share — with your ${oN}.</b> It sits above the ceiling and is compressed; your ${sN} stays within the corridor and doesn't change in any major way.`;
+  } else if(hasLift && hasStab){
+    const uN = incStatus==="under" ? nInc : nWea, sN = incStatus==="within" ? nInc : nWea;
+    w = de
+      ? `<b>Du gewinnst — mit deinem ${uN}.</b> Es wird mindestens auf die Untergrenze gehoben; dein ${sN} bleibt im Korridor und ändert sich nicht wesentlich.`
+      : `<b>You gain — with your ${uN}.</b> It is lifted to at least the floor; your ${sN} stays within the corridor and doesn't change in any major way.`;
+  } else {
+    w = de
+      ? `<b>Du bist abgesichert.</b> Auf deinem Konto ändert sich wenig — aber die Untergrenze ist ab jetzt garantiert.`
+      : `<b>You're secure.</b> Little changes in your account — but the floor is guaranteed from now on.`;
+  }
+  const punch = de
+    ? `<br><br>Konkret hieße das: Niemand stürbe mehr an Hunger — heute sind es rund <b>25.000 Menschen, jeden Tag</b>. Und niemand besäße Privatjets oder Medienimperien.`
+    : `<br><br>Concretely: no one would die of hunger any more — today, that's roughly <b>25,000 people every single day</b>. And no one would own private jets or media empires.`;
+  $("worldBody").innerHTML = w + punch;
+
+  /* share — carries both factors + the question */
+  const fInc = incF!=null ? mf(incF)+"×" : "–";
+  const fWea = weaF!=null ? mf(weaF)+"×" : "–";
+  let claim;
+  if(incF!=null && weaF!=null) claim = de ? `In einer ${M}×-Welt: mein Einkommen bei ${fInc}, mein Vermögen bei ${fWea}.` : `In a ${M}× world: my income at ${fInc}, my wealth at ${fWea}.`;
+  else { const f = incF!=null?fInc:fWea; const w2 = incF!=null?(de?"Einkommen":"income"):(de?"Vermögen":"wealth");
+    claim = de ? `In einer ${M}×-Welt läge mein ${w2}-Faktor bei ${f}.` : `In a ${M}× world my ${w2} factor would be ${f}.`; }
+  const q = de ? " Gewinnen, teilen oder abgesichert? Wo ziehst du die Grenze? — Radikal Normal" : " Gain, share, or stay secure? Where would you draw the line? — Radically Normal";
+  window.__share = claim + q;
+}
+
+/* events */
+$("income").addEventListener("input", render);
+$("wealth").addEventListener("input", render);
+$("mslider").addEventListener("input", render);
+document.querySelectorAll(".langs button").forEach(b=>b.addEventListener("click", ()=>{ lang=b.dataset.lang; render(); }));
+document.querySelectorAll(".curr button").forEach(b=>b.addEventListener("click", ()=>{
+  cur=b.dataset.cur;
+  document.querySelectorAll(".curr button").forEach(x=>x.classList.toggle("on", x===b));
+  $("cur1").textContent=CURSYM[cur]; $("cur2").textContent=CURSYM[cur]; render();
+}));
+$("shareBtn").addEventListener("click", async ()=>{
+  const url = window.location.href;
+  const txt = (window.__share || STR[lang].provoke) + (url ? "\n" + url : "");
+  try{
+    if(navigator.share){ await navigator.share({ text: txt }); return; }
+    await navigator.clipboard.writeText(txt); showCopied();
+  }catch(e){
+    try{ const ta=document.createElement("textarea"); ta.value=txt; ta.style.position="fixed"; ta.style.opacity="0";
+      document.body.appendChild(ta); ta.select(); document.execCommand("copy"); document.body.removeChild(ta); showCopied(); }catch(_){}
+  }
+});
+$("shareX").addEventListener("click", ()=>{
+  const t = window.__share || STR[lang].provoke;
+  window.open("https://twitter.com/intent/tweet?text="+encodeURIComponent(t)+"&url="+encodeURIComponent(location.href), "_blank", "width=600,height=520,noopener");
+});
+$("shareLI").addEventListener("click", ()=>{
+  const t = window.__share || STR[lang].provoke;
+  try{ if(navigator.clipboard) navigator.clipboard.writeText(t); }catch(e){}
+  window.open("https://www.linkedin.com/sharing/share-offsite/?url="+encodeURIComponent(location.href), "_blank", "width=600,height=560,noopener");
+  showCopied(STR[lang].copiedLI);
+});
+function showCopied(msg){ const c=$("copied"); c.textContent = msg || STR[lang].copied; c.classList.remove("hidden"); clearTimeout(window.__ct); window.__ct=setTimeout(()=>c.classList.add("hidden"),3600); }
+
+render();
+</script>
+</body>
+</html>
